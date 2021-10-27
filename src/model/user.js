@@ -18,7 +18,7 @@ const User = sequelize.define(
       comment: "密码，必须",
       // allowNull 默认为 true
     },
-    isAdmin: {
+    is_admin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: 0,

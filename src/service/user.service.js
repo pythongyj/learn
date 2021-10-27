@@ -7,9 +7,22 @@ class UserService {
       user_name,
       password,
     });
-    console.log(result);
-    // TODO 写入数据库
-    return result;
+    return result.dataValues;
+  }
+
+  async getUserInfo({ id, user_name, password, is_admin }) {
+    const whereOpt = {};
+    id && Object.assign(whereOpt, { id });
+    user_name && Object.assign(whereOpt, { user_name });
+    password && Object.assign(whereOpt, { password });
+    is_admin && Object.assign(whereOpt, { is_admin });
+
+   const result = await User.findOne({
+      attributes: ["id", "user_name", "password", "is_admin"],
+      where: whereOpt,
+    });
+
+    return result?result.dataValues:null;
   }
 }
 

@@ -4,8 +4,10 @@ const router = new Router({ prefix: "/user" }); // { prefix: "/user" } 添加路
 
 const { register,login } = require('../controller/user.controller')
 
+const { userValidata,userIsNullValidata } = require('../middleware/errors/user')
+
 // 注册接口
-router.post("/register", register);
+router.post("/register", userValidata,userIsNullValidata,register);
 // 登陆接口
 router.post("/login", login);
 
