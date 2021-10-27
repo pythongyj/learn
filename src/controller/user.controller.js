@@ -1,10 +1,11 @@
 const { createUser } = require("../service/user.service");
+
 const { userRegisterError } = require('../constants/errors.type')
 
 class UserController {
   async register(ctx, next) {
     // 获取数据
-    const { user_name, password } = JSON.parse(ctx.request.body);
+    const { user_name, password } = ctx.request.body;
     try {
       // 操作数据库
       const res = await createUser(user_name, password);
