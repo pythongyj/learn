@@ -2,29 +2,30 @@ const Router = require("koa-router");
 
 const router = new Router({ prefix: "/user" }); // { prefix: "/user" } 添加路由前缀   eg：{ prefix: "/user" }  ==> /user/word
 
-const { register, login } = require("../controller/user.controller");
+const { register, login ,passwordModify} = require("../controller/user.controller");
+
+const { auth } = require('../middleware/auth')
 
 const {
   userValidata,
-  userIsNullValidata,
-  cryptjsPassword
+  verifyUser,
+  cryptjsPassword,
+  verifyLogin
 } = require("../middleware/errors/user");
 
-
-// 登陆接口
-router.get("/", (ctx,next)=>{
-    ctx.body ='heihei'
-});
 
 // 注册接口
 router.post(
   "/register",
   userValidata,
-  userIsNullValidata,
+  verifyUser,
   cryptjsPassword,
   register
 );
 // 登陆接口
-router.post("/login", login);
+router.post("/login",userValidata, login);
+
+// 修改密码接口
+router.patch('/modify',auth,cryptjsPassword,passwordModify)
 
 module.exports = router;

@@ -1,29 +1,86 @@
-const { createUser } = require("../service/user.service");
+const { createUser, getUserInfo,updatePasswordById } = require("../service/user.service");
 
-const { userRegisterError } = require('../constants/errors.type')
+const { userRegisterError,userLoginError } = require("../constants/errors.type");
+
+const jwt = require("jsonwebtoken");
+
+const { WEB_TOKEN_KEY } = require("../config/default");
 
 class UserController {
+  /**
+   * 用户注册接口
+   * @param {*} ctx
+   * @param {*} next
+   */
   async register(ctx, next) {
     // 获取数据
-    const { user_name, password } = ctx.request.body;
+    const { user_name, password,is_admin } = ctx.request.body;
     try {
       // 操作数据库
-      const res = await createUser(user_name, password);
+      const res = await createUser({user_name, password,is_admin});
       // 返回结果
       ctx.body = {
         code: 0,
         message: "用户注册成功",
-        resutl: {
+        result: {
           id: res.id,
           user_name: res.user_name,
         },
       };
     } catch (error) {
-      ctx.app.emit("error", userRegisterError, ctx);
+      ctx.app.emit("error", userLoginError, ctx);
     }
   }
+  /**
+   * 用户登陆接口
+   * @param {*} ctx
+   * @param {*} next
+   */
   async login(ctx, next) {
-    ctx.body = ctx.request.body;
+    const { user_name } = ctx.request.body;
+   
+    try {
+      const res = await getUserInfo({ user_name });
+      const { password, ...reset } = res;
+      const token = jwt.sign(reset, WEB_TOKEN_KEY, { expiresIn: "1d" });
+      console.log('user_name111222',user_name);
+      
+      ctx.body = {
+        code: 0,
+        message: "登陆成功",
+        result: {
+          token,
+        },
+      };
+    } catch (error) {
+      console.log('user_name111',user_name);
+      ctx.app.emit("error", userLoginError, ctx);
+    }
+  }
+
+  // 修改密码
+  async passwordModify(ctx,next){
+    // 获取数据
+    const { password,user_name,is_admin } = ctx.request.body;
+    const id = ctx.state.user.id
+    // 操作数据库
+    const res = await updatePasswordById({id,user_name, password, is_admin})
+    console.log('res----',res);
+    if (res == 1) {
+      ctx.body = {
+        code:0,
+        message:'修改成功' ,
+        result:''
+      }
+    }else{
+      ctx.body = {
+        code:10007,
+        message:'修改失败' ,
+        result:''
+      }
+    }
+    
+
   }
 }
 
