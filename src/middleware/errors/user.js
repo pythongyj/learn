@@ -8,8 +8,9 @@ const {
   userDoesNotExisted,
   userInvalidPassword,
   userLoginError,
-} = require("../../constants/errors.type");
+} = require("../../constants/errors/user.type");
 
+// 验证账号密码不能为空
 const userValidata = async (ctx, next) => {
   const { user_name, password } = ctx.request.body;
   if (!user_name || !password) {
@@ -20,6 +21,7 @@ const userValidata = async (ctx, next) => {
   await next();
 };
 
+// 验证账号与密码是否正确
 const verifyUser = async (ctx, next) => {
   const { user_name } = ctx.request.body;
   try {

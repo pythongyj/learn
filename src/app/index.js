@@ -1,17 +1,31 @@
+const path = require("path");
+
 const koa = require("koa");
 
-const KoaBody = require('koa-body');
+const koaBody = require("koa-body");
 
-const router = require('../routers/index')
+const koaStatic = require("koa-static");
 
-const errorHandler = require('./errorHandler')
+const parameter = require('koa-parameter');
 
+const router = require("../routers/index");
+const errorHandler = require("./errorHandler");
 const app = new koa();
 
-app.use(KoaBody()); // 在路由之前注册 koaBody 中间件
+app.use(
+  koaBody({
+    multipart: true,
+    formidable: {
+      uploadDir: path.join(__dirname, "../uploads"),
+      keepExtensions: true,
+    },
+  })
+); // 在路由之前注册 koaBody 中间件
 
+app.use(parameter(app))
 app.use(router.routes()).use(router.allowedMethods()); // 注册路由中间件
- 
-app.on('error',errorHandler) // 统一处理错误信息
+app.use(koaStatic(path.join(__dirname, "../uploads")));
 
-module.exports = app
+app.on("error", errorHandler); // 统一处理错误信息
+
+module.exports = app;

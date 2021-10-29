@@ -35,6 +35,6 @@ const User = sequelize.define(
 // User.sync({ force: true });
 
 // `sequelize.define` 会返回模型
-console.log(User === sequelize.models.User); // true
+// console.log(User === sequelize.models.User); // true
 
 module.exports = User;

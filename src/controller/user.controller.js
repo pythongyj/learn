@@ -1,6 +1,6 @@
 const { createUser, getUserInfo,updatePasswordById } = require("../service/user.service");
 
-const { userRegisterError,userLoginError } = require("../constants/errors.type");
+const { userRegisterError,userLoginError,updatePasswordError } = require("../constants/errors/user.type");
 
 const jwt = require("jsonwebtoken");
 
@@ -28,7 +28,7 @@ class UserController {
         },
       };
     } catch (error) {
-      ctx.app.emit("error", userLoginError, ctx);
+      ctx.app.emit("error", userRegisterError, ctx);
     }
   }
   /**
@@ -38,13 +38,10 @@ class UserController {
    */
   async login(ctx, next) {
     const { user_name } = ctx.request.body;
-   
     try {
       const res = await getUserInfo({ user_name });
       const { password, ...reset } = res;
       const token = jwt.sign(reset, WEB_TOKEN_KEY, { expiresIn: "1d" });
-      console.log('user_name111222',user_name);
-      
       ctx.body = {
         code: 0,
         message: "登陆成功",
@@ -53,7 +50,7 @@ class UserController {
         },
       };
     } catch (error) {
-      console.log('user_name111',user_name);
+      console.error('user_name111',user_name);
       ctx.app.emit("error", userLoginError, ctx);
     }
   }
@@ -65,7 +62,6 @@ class UserController {
     const id = ctx.state.user.id
     // 操作数据库
     const res = await updatePasswordById({id,user_name, password, is_admin})
-    console.log('res----',res);
     if (res == 1) {
       ctx.body = {
         code:0,
@@ -73,11 +69,7 @@ class UserController {
         result:''
       }
     }else{
-      ctx.body = {
-        code:10007,
-        message:'修改失败' ,
-        result:''
-      }
+      ctx.body = updatePasswordError
     }
     
 

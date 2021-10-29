@@ -48,7 +48,6 @@ class UserService {
     user_name && Object.assign(newUser, { user_name });
     password && Object.assign(newUser, { password });
     is_admin && Object.assign(newUser, { is_admin });
-console.log(whereOpt,newUser);
     const res = await User.update(newUser, { where: whereOpt });
 
     
